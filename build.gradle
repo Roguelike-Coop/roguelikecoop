@@ -1,0 +1,36 @@
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+def orgPackage = 'io.github.roguelikecoop'
+def mainClass = orgPackage + '.' + project.name + '.Application'
+def jarFile = 'build/libs/' + project.name + '-' + version + '.jar'
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+dependencies {
+    compile 'com.github.Hexworks.Zircon:zircon.core:2018.1.9-PREVIEW'
+    compile 'com.github.Hexworks.Zircon:zircon.swing:2018.1.9-PREVIEW'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClass
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task run (type: JavaExec) {
+    dependsOn jar
+    classpath = files(jarFile)
+    main = mainClass
+}
